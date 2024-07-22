@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Cart System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .products, .cart {
+            width: 45%;
+        }
+
+        .product {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .buy-btn, .remove-btn {
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-top: 10px;
+        }
+
+        .total-price {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="products">
+            <h2>Products List</h2>
+            <div class="product" data-id="1" data-name="Product 1" data-price="10">
+                <p>Product 1 - $10</p>
+                <button class="buy-btn">Buy</button>
+            </div>
+            <div class="product" data-id="2" data-name="Product 2" data-price="20">
+                <p>Product 2 - $20</p>
+                <button class="buy-btn">Buy</button>
+            </div>
+            <div class="product" data-id="3" data-name="Product 3" data-price="30">
+                <p>Product 3 - $30</p>
+                <button class="buy-btn">Buy</button>
+            </div>
+        </div>
+        <div class="cart">
+            <h2>Cart</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cart items will be added here -->
+                </tbody>
+            </table>
+            <div class="total-price">
+                Total Price: $<span id="total">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let totalPrice = 0;
+
+            // Handle Buy button click
+            $('.buy-btn').click(function() {
+                let $product = $(this).closest('.product');
+                let productId = $product.data('id');
+                let productName = $product.data('name');
+                let productPrice = $product.data('price');
+
+                // Change Buy button to Remove
+                $(this).text('Remove').removeClass('buy-btn').addClass('remove-btn');
+
+                // Add product to cart table
+                $('.cart tbody').append(`
+                    <tr data-id="${productId}">
+                        <td>${productName}</td>
+                        <td>$${productPrice}</td>
+                        <td><button class="remove-btn" data-id="${productId}">Remove</button></td>
+                    </tr>
+                `);
+
+                // Update total price
+                totalPrice += productPrice;
+                $('#total').text(totalPrice);
+            });
+
+            // Handle Remove button click
+            $(document).on('click', '.remove-btn', function() {
+                let $productRow = $(this).closest('tr');
+                let productId = $productRow.data('id');
+                let productPrice = $productRow.find('td:eq(1)').text().replace('$', '');
+
+                // Remove product from cart table
+                $productRow.remove();
+
+                // Update total price
+                totalPrice -= parseFloat(productPrice);
+                $('#total').text(totalPrice);
+
+                // Change Remove button to Buy in the products list
+                $(`.product[data-id="${productId}"] .remove-btn`)
+                    .text('Buy')
+                    .removeClass('remove-btn')
+                    .addClass('buy-btn');
+            });
+        });
+    </script>
+</body>
+</html>
